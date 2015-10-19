@@ -20,36 +20,12 @@ struct stat
 	double stdDev;
 };
 
-int main(int argc, char* argv[])
+void readInEvents(fstream& inFile, event eventArray[50])
 {
-	
-	if(argc != 5)
-	{
-		cerr << "Usage: IDS <eventsFile> <username> <statsFile> <days>" << endl;
-		return -1;
-	}
-	
-	/*Capture colonnd line arguments.*/
-	int days = atoi(argv[4]);
-	string username = argv[2];
-	string eventsFile = argv[1];
-	string statsFile = argv[3];
-	
-	/*Start reading in from Events file.*/
-	fstream inFile;
-	inFile.open(eventsFile.c_str());
-	if(!inFile.good())
-	{
-		cerr << "Error reading Events file. Exiting..." << endl;
-		return -1;
-	}
-	
 	int numEvents1;
 	char colon, tmp;
 	inFile >> numEvents1;
 	inFile.get(tmp);
-	inFile.get(tmp);
-	event eventArray[50] = {"",'Z',-1,100,"",-1};
 	string temp;
 	
 	for(int i=0;i<numEvents1;i++)
@@ -75,27 +51,21 @@ int main(int argc, char* argv[])
 		}
 		getline(inFile, temp, '\n');
 		
-		/*Output Test*/
-		cout << eventArray[i].name << ":" << eventArray[i].CDE << ":" << eventArray[i].min << ":" << eventArray[i].max << ":" << eventArray[i].units << ":" << eventArray[i].weight << ":" << endl;
+		/*Output Test
+		cout << eventArray[i].name << ":" << eventArray[i].CDE << ":" << eventArray[i].min << ":" << eventArray[i].max << ":" << eventArray[i].units << ":" << eventArray[i].weight << ":" << endl;*/
 	}
-	cout << endl;
+
 	inFile.close();
 	/*Reading in from Events file complete*/
-	
-	
-	/*Start reading in from Stats file.*/
-	inFile.open(statsFile.c_str());
-	if(!inFile.good())
-	{
-		cerr << "Error reading Stats file. Exiting..." << endl;
-		return -1;
-	}
-	
+}		
+
+void readInStats(fstream& inFile, stat statArray[50])
+{
 	int numEvents2;
+	char colon, tmp;
 	inFile >> numEvents2;
 	inFile.get(tmp);
-	inFile.get(tmp);
-	stat statArray[50] = {"",-1,-1.0};
+	string temp;
 	
 	for(int i=0;i<numEvents2;i++)
 	{
@@ -105,10 +75,53 @@ int main(int argc, char* argv[])
 		getline(inFile, temp, ':');
 		statArray[i].stdDev = atof(temp.c_str());
 		getline(inFile, temp, '\n');
-		/*Output Test*/
-		cout << statArray[i].name << ":" << statArray[i].mean << ":" << statArray[i].stdDev << ":" << endl;
+		/*Output Test
+		cout << statArray[i].name << ":" << statArray[i].mean << ":" << statArray[i].stdDev << ":" << endl;*/
 	}
 	inFile.close();
+}
+
+int main(int argc, char* argv[])
+{
+	
+	if(argc != 5)
+	{
+		cerr << "Usage: IDS <eventsFile> <username> <statsFile> <days>" << endl;
+		return -1;
+	}
+	
+	/*Capture colonnd line arguments.*/
+	int days = atoi(argv[4]);
+	string username = argv[2];
+	string eventsFile = argv[1];
+	string statsFile = argv[3];
+	
+	/*Start reading in from Events file.*/
+	fstream inFile;
+	inFile.open(eventsFile.c_str());
+
+	if(!inFile.good())
+	{
+		cerr << "Error reading Events file. Exiting..." << endl;
+		return -1;
+	}
+	
+	event eventArray[50] = {"",'Z',-1,100,"",-1};
+	readInEvents(inFile, eventArray);
+	cout << "Events read in success." << endl;		
+				
+	/*Start reading in from Stats file.*/
+	inFile.open(statsFile.c_str());
+	if(!inFile.good())
+	{
+		cerr << "Error reading Stats file. Exiting..." << endl;
+		return -1;
+	}
+	
+	stat statArray[50] = {"",-1,-1.0};
+	readInStats(inFile, statArray);	
+	cout << "Stats read in success." << endl;
+	
 	/*Reading in from Stats file complete*/
 	
 	return 0;
