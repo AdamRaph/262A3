@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<cstdlib>
+#include<sstream>
 using namespace std;
 
 struct event
@@ -11,6 +12,7 @@ struct event
 	int max;
 	string units;
 	int weight;
+	bool logged;
 };
 
 struct stat
@@ -18,35 +20,43 @@ struct stat
 	string name;
 	double mean;
 	double stdDev;
+	bool logged;
 };
 
-void readInEvents(fstream& inFile, event eventArray[50])
+void readInEvents(ifstream& inFile, event eventArray[50], int& numEvents)
 {
-	int numEvents1;
 	char colon, tmp;
-	inFile >> numEvents1;
+	inFile >> numEvents;
 	inFile.get(tmp);
 	string temp;
 	
-	for(int i=0;i<numEvents1;i++)
+	for(int i=0;i<numEvents;i++)
 	{
 		getline(inFile, eventArray[i].name, ':');
 		getline(inFile, temp, ':');
 		eventArray[i].CDE = temp[0];
 		getline(inFile, temp, ':'); //HL 19/10 added brackets to IF statements for neatness
-		if(!temp.empty()){
+		if(!temp.empty()) 
+		{
 			eventArray[i].min = atoi(temp.c_str());
 		}
+		else 
+			eventArray[i].min = -1;
 		getline(inFile, temp, ':');
-		if(!temp.empty()){
+		if(!temp.empty())
+		{
 			eventArray[i].max = atoi(temp.c_str());
 		}
+		else 
+			eventArray[i].max = -1;
 		getline(inFile, temp, ':');
-		if(!temp.empty()){
+		if(!temp.empty())
+		{
 			eventArray[i].units = temp;
 		}
 		getline(inFile, temp, ':');
-		if(!temp.empty()){
+		if(!temp.empty())
+		{
 			eventArray[i].weight = atoi(temp.c_str());
 		}
 		getline(inFile, temp, '\n');
@@ -59,15 +69,14 @@ void readInEvents(fstream& inFile, event eventArray[50])
 	/*Reading in from Events file complete*/
 }		
 
-void readInStats(fstream& inFile, stat statArray[50])
+void readInStats(ifstream& inFile, stat statArray[50], int& numStats)
 {
-	int numEvents2;
 	char colon, tmp;
-	inFile >> numEvents2;
+	inFile >> numStats;
 	inFile.get(tmp);
 	string temp;
 	
-	for(int i=0;i<numEvents2;i++)
+	for(int i=0;i<numStats;i++)
 	{
 		getline(inFile, statArray[i].name, ':');
 		getline(inFile, temp, ':');
@@ -80,6 +89,90 @@ void readInStats(fstream& inFile, stat statArray[50])
 	}
 	inFile.close();
 }
+
+
+bool generateLogs(event eventArray[50], int& numEvents, int days, string username)
+{
+	srand(time(NULL));
+	bool done;
+	int randIndex;
+	int randVal, dailyEvents;
+	/*OutFiles are the individual day logs*/
+	ofstream outFile[days];
+	ofstream completeLog;
+	/*CompleteLog is a single file to store all logs*/
+	completeLog.open("totalLogs.txt");
+	if(!completeLog.good())
+	{
+		cerr << "Error creating total logs. Exiting..." << endl;
+		return false;
+	}
+	completeLog << "User: " << username << endl;
+	
+	string dayFiles[days];
+	stringstream ss;
+	
+	cout << "Generating Logs." << endl;
+	for(int i=0;i<days;i++)
+	{
+		/*Creates filenames*/
+		ss << "Day" << i+1 << "Logs.txt";
+		dayFiles[i] = ss.str();
+		ss.str("");
+	}
+	for(int daysLogged=0;daysLogged<days;daysLogged++)
+	{
+		/*Randomly selects how many events happen on this day*/
+		dailyEvents = rand() % 20 + 5;
+		/*Opens each individual day file and creates a log*/
+		outFile[daysLogged].open(dayFiles[daysLogged].c_str());
+		if(outFile[daysLogged].good())
+		{
+			outFile[daysLogged] << "User: " << username << endl << "-----------" << endl;
+			done = false;
+			completeLog << "-----------" << endl << "<Day " << daysLogged+1 << ">" << endl << endl;
+							
+			for(int eventCount=0;eventCount<dailyEvents;eventCount++)
+			{
+				randIndex = rand() % numEvents + 1; //generates an index from 1 to numEvents
+					if(eventArray[randIndex-1].CDE == 'C')
+					{
+						/*Continuous event, has min and max field*/
+						randVal = rand() % eventArray[randIndex-1].max + eventArray[randIndex-1].min;
+						outFile[daysLogged]  << eventArray[randIndex-1].CDE << " event: " << eventArray[randIndex-1].name << ": " << randVal << " " <<  eventArray[randIndex-1].units<< endl;
+						completeLog << eventArray[randIndex-1].CDE << " event: " << eventArray[randIndex-1].name << ": " << randVal << " " <<  eventArray[randIndex-1].units<< endl;
+					}
+					else if(eventArray[randIndex-1].CDE == 'D')
+					{
+						/*Discrete event, has no max field*/
+						randVal = rand() % 10 + eventArray[randIndex-1].min;
+						outFile[daysLogged] << eventArray[randIndex-1].CDE << " event: " << eventArray[randIndex-1].name << ": " << randVal  << endl;
+						completeLog << eventArray[randIndex-1].CDE << " event: " << eventArray[randIndex-1].name << ": " << randVal  << endl;
+					}
+					else if(eventArray[randIndex-1].CDE == 'E')
+					{
+						/*E event, has no min or max field*/
+						randVal = rand();
+						outFile[daysLogged]  << eventArray[randIndex-1].CDE << " event: " << eventArray[randIndex-1].name << ": " << randVal << " " <<  eventArray[randIndex-1].units << endl;
+						completeLog << eventArray[randIndex-1].CDE << " event: " << eventArray[randIndex-1].name << ": " << randVal << " " <<  eventArray[randIndex-1].units << endl;
+					}
+				done = true;
+			}
+		}
+		else
+		{
+			cerr << "Error creating daily logs. Exiting..." << endl;
+			return false;
+		}
+	}
+	completeLog << "-----------";
+	
+	/*Close files for insertion*/
+	for(int i=0;i<days;i++)
+		outFile[i].close();
+	completeLog.close();
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -95,9 +188,9 @@ int main(int argc, char* argv[])
 	string username = argv[2];
 	string eventsFile = argv[1];
 	string statsFile = argv[3];
-	
+	int numStats, numEvents;
 	/*Start reading in from Events file.*/
-	fstream inFile;
+	ifstream inFile;
 	inFile.open(eventsFile.c_str());
 
 	if(!inFile.good())
@@ -106,8 +199,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	
-	event eventArray[50] = {"",'Z',-1,100,"",-1};
-	readInEvents(inFile, eventArray);
+	event eventArray[50] = {"",'Z',-1,-1,"",-1};
+	readInEvents(inFile, eventArray, numEvents);
 	cout << "Events read in success." << endl;		
 				
 	/*Start reading in from Stats file.*/
@@ -118,11 +211,18 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	
-	stat statArray[50] = {"",-1,-1.0};
-	readInStats(inFile, statArray);	
+	stat statArray[50] = {"",-1,-1.0, false};
+	readInStats(inFile, statArray, numStats);	
 	cout << "Stats read in success." << endl;
 	
 	/*Reading in from Stats file complete*/
+	/************************************************************************************/
+	if(!generateLogs(eventArray, numEvents, days, username))
+	{
+		cerr << "Generating files unsuccessful. Exiting..." << endl;
+		return -1;
+	}
+	
 	
 	return 0;
 }
