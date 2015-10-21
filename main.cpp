@@ -82,7 +82,37 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 	
-	/*Analysis Engine*/
+	/*Analysis Engine - Generate Report */
+	ifstream completeLog("totalLogs.txt");
+	
+	/*Possible Variables*/
+	long logins=0, Elogins=0, Dlogins=0;
+	long timeonline=0;
+	long emailsent=0;
+	long download=0;
+	long moneymade=0;
+	
+	char currentevent;
+	
+	// Dont need first 4 lines of file
+	string junk;
+	getline(completeLog,junk);
+	getline(completeLog,junk);
+	getline(completeLog,junk);
+	getline(completeLog,junk);
+	
+	completeLog >> currentevent;
+	
+	
+	cout << "***** Begin Report *****" << endl;
+	cout << "Number of days: " << days << endl;
+	for(int i = 1; i <= days; i++){
+		cout << "Day " << i << " of " << days << ":" << endl;
+		
+		
+		
+	}
+	
 	
 	
 	return 0;
