@@ -31,6 +31,66 @@ void readInStats(ifstream& inFile, stat statArray[50], int& numStats);
 //Generates logs
 bool generateLogs(event eventArray[50], int& numEvents, int days, string username);
 
+void analysisEngine(int days){
+	
+	ifstream completeLog("totalLogs.txt"); // open complete log file
+	
+	/*Possible Variables*/
+	long logins=0, Elogins=0, Dlogins=0;
+	long timeonline=0;
+	long emailsent=0;
+	long download=0;
+	long moneymade=0;
+	
+	
+	
+	int c=0,e=0,d=0;
+	char eventType;
+	string event;
+	
+	// Dont need first 4 lines of file
+	string junk;
+	getline(completeLog,junk);
+	getline(completeLog,junk);
+	getline(completeLog,junk);
+	getline(completeLog,junk);
+	
+	
+	
+	completeLog >> eventType;
+	if (eventType == 'D'){
+		d++;
+		completeLog >> event >> event;
+		
+	}
+	else if (eventType == 'E'){
+		e++;
+		completeLog >> event >> event;
+		
+	}
+	else if (eventType == 'C'){
+		c++;
+		completeLog >> event >> event;
+		
+	}
+	
+	
+	
+	
+	
+	cout << "***** Begin Report *****" << endl;
+	cout << "Number of days: " << days << endl;
+	for(int i = 1; i <= days; i++){
+		cout << "Day " << i << " of " << days << ":" << endl;
+		
+		
+		
+	}
+	
+	
+	
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -83,37 +143,7 @@ int main(int argc, char* argv[])
 	}
 	
 	/*Analysis Engine - Generate Report */
-	ifstream completeLog("totalLogs.txt");
-	
-	/*Possible Variables*/
-	long logins=0, Elogins=0, Dlogins=0;
-	long timeonline=0;
-	long emailsent=0;
-	long download=0;
-	long moneymade=0;
-	
-	char currentevent;
-	
-	// Dont need first 4 lines of file
-	string junk;
-	getline(completeLog,junk);
-	getline(completeLog,junk);
-	getline(completeLog,junk);
-	getline(completeLog,junk);
-	
-	completeLog >> currentevent;
-	
-	
-	cout << "***** Begin Report *****" << endl;
-	cout << "Number of days: " << days << endl;
-	for(int i = 1; i <= days; i++){
-		cout << "Day " << i << " of " << days << ":" << endl;
-		
-		
-		
-	}
-	
-	
+	analysisEngine(days);
 	
 	return 0;
 }
@@ -228,6 +258,7 @@ void readInEvents(ifstream& inFile, event eventArray[50], int& numEvents)
 	char colon, tmp;
 	inFile >> numEvents;
 	inFile.get(tmp);
+	inFile.get(tmp);
 	string temp;
 	
 	for(int i=0;i<numEvents;i++)
@@ -235,7 +266,7 @@ void readInEvents(ifstream& inFile, event eventArray[50], int& numEvents)
 		getline(inFile, eventArray[i].name, ':');
 		getline(inFile, temp, ':');
 		eventArray[i].CDE = temp[0];
-		getline(inFile, temp, ':'); //HL 19/10 added brackets to IF statements for neatness
+		getline(inFile, temp, ':');
 		if(!temp.empty())
 		{
 			eventArray[i].min = atoi(temp.c_str());
