@@ -1,7 +1,8 @@
-#include<iostream>
-#include<fstream>
-#include<cstdlib>
-#include<sstream>
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+#include <sstream>
+#include <string.h>
 using namespace std;
 
 struct event
@@ -24,29 +25,19 @@ struct stat
 };
 
 /*Functions*/
-//Reads in data from the events file
 void readInEvents(ifstream& inFile, event eventArray[50], int& numEvents);
-//Reads in data from the stats file
 void readInStats(ifstream& inFile, stat statArray[50], int& numStats);
-//Generates logs
 bool generateLogs(event eventArray[50], int& numEvents, int days, string username);
+float calcMean(int numInstances, long total){
+	return total/numInstances;
+}
+
 
 void analysisEngine(int days){
+	cout << endl << "***** Begin Report *****" << endl;
+	cout << "Number of days: " << days << endl;
 	
 	ifstream completeLog("totalLogs.txt"); // open complete log file
-	
-	/*Possible Variables*/
-	long logins=0, Elogins=0, Dlogins=0;
-	long timeonline=0;
-	long emailsent=0;
-	long download=0;
-	long moneymade=0;
-	
-	
-	
-	int c=0,e=0,d=0;
-	char eventType;
-	string event;
 	
 	// Dont need first 4 lines of file
 	string junk;
@@ -55,39 +46,111 @@ void analysisEngine(int days){
 	getline(completeLog,junk);
 	getline(completeLog,junk);
 	
+	int loginsCount=0,timeCount=0,emailsCount=0,downloadCount=0,moneyCount=0;
+	long allLogins=0, allTime=0, allEmails=0, allDownload=0, allMoney=0;
 	
-	
-	completeLog >> eventType;
-	if (eventType == 'D'){
-		d++;
-		completeLog >> event >> event;
-		
-	}
-	else if (eventType == 'E'){
-		e++;
-		completeLog >> event >> event;
-		
-	}
-	else if (eventType == 'C'){
-		c++;
-		completeLog >> event >> event;
-		
-	}
-	
-	
-	
-	
-	
-	cout << "***** Begin Report *****" << endl;
-	cout << "Number of days: " << days << endl;
 	for(int i = 1; i <= days; i++){
+		
+		char eventType='A';
+		long logins=0, loginsTotal=0;
+		long time=0, timeTotal=0;
+		long emails=0, emailsTotal=0;
+		long download=0, downloadTotal=0;
+		long money=0, moneyTotal=0;
+		
+		int c=0,e=0,d=0;
+		string event;
+		
+		while(eventType != '-'){
+			// Read in event type
+			completeLog >> eventType;
+			if(eventType != '-'){
+				//cout << eventType<< " ";	// Debug Line
+				if (eventType == 'D'){
+					d++;
+				}
+				else if (eventType == 'E'){
+					e++;
+				}
+				else if (eventType == 'C'){
+					c++;
+				}
+				
+				// Read in Event stats
+				completeLog >> event >> event;
+				//cout << event << " ";					// Debug Line
+				string tmpString;
+				long tmpLong=0;
+				
+				if (event == "Download"){
+					download++;
+					completeLog >> tmpString >> tmpLong >> tmpString;
+					downloadTotal = downloadTotal+tmpLong;
+					downloadCount++;
+					//cout << tmpLong << " ";				// Debug Line
+				}
+				else if(event == "Time"){
+					time++;
+					completeLog >> tmpString >> tmpLong >> tmpString;
+					timeTotal = timeTotal+tmpLong;
+					timeCount++;
+					//cout << tmpLong << " ";				// Debug Line
+					
+				}
+				else if(event == "Money"){
+					money++;
+					completeLog >> tmpString >> tmpLong >> tmpString;
+					moneyTotal = moneyTotal+tmpLong;
+					moneyCount++;
+					//cout << tmpLong << " ";		// Debug Line
+				}
+				else if(event == "Emails"){
+					emails++;
+					completeLog >> tmpString >> tmpLong;
+					emailsTotal = emailsTotal+tmpLong;
+					emailsCount++;
+					//cout << tmpLong << " ";		// Debug Line
+				}
+				else if(event == "Logins:"){
+					logins++;
+					completeLog >> tmpLong;
+					loginsTotal = loginsTotal+tmpLong;
+					loginsCount++;
+					//cout << tmpLong << " ";				// Debug Line
+				}
+				
+				//cout << endl;							// Debug Line
+			}
+		}
+		getline(completeLog,junk);
+		getline(completeLog,junk);
+		
+		/* End of Day Printout*/
 		cout << "Day " << i << " of " << days << ":" << endl;
+		cout << "Total Download volume: " << downloadTotal << " bits" << endl;
+		cout << "Total Time Online: " << timeTotal << " Minutes" << endl;
+		cout << "Total Money made: " << moneyTotal << " Cents" << endl;
+		cout << "Total Emails Sent: " << emailsTotal << endl;
+		cout << "Total Logins: " << loginsTotal << endl;
+		cout << endl;
 		
-		
-		
+		/*For Averages*/
+		allDownload += downloadTotal;
+		allTime += timeTotal;
+		allMoney += moneyTotal;
+		allEmails += emailsTotal;
+		allLogins += loginsTotal;
 	}
 	
+	cout << "**** Overall Statistics *****" << endl;
+	cout << "Average Download volume: " << calcMean(downloadCount,allDownload) << " bits" << endl;
+	cout << "Average Time Online: " << calcMean(timeCount,allTime) << " Minutes" << endl;
+	cout << "Average Money made: " << calcMean(moneyCount,allMoney) << " Cents" << endl;
+	cout << "Average Emails Sent: " << calcMean(emailsCount,allEmails) << endl;
+	cout << "Average Logins: " << calcMean(loginsCount,allLogins) << endl;
+	cout << endl;
 	
+	completeLog.close();
 	
 }
 
