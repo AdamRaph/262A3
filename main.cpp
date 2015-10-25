@@ -3,7 +3,12 @@
 #include <cstdlib>
 #include <sstream>
 #include <string.h>
+#include <iomanip>
+#include <cmath>
 using namespace std;
+
+// For the Standard Deviation Arrays
+#define MAX 500
 
 struct event
 {
@@ -28,8 +33,20 @@ struct stat
 void readInEvents(ifstream& inFile, event eventArray[50], int& numEvents);
 void readInStats(ifstream& inFile, stat statArray[50], int& numStats);
 bool generateLogs(event eventArray[50], int& numEvents, int days, string username);
-float calcMean(int numInstances, long total){
-	return total/numInstances;
+
+double calcMean(int numInstances, long total){
+	if ((numInstances ==0) || (total == 0)){
+		return 0;
+	}
+	else return total/numInstances;
+}
+double calcDev(long * Array, int arraySize ,double mean){
+	
+	double StandardDeviation=0;
+	for(int i = 0; i < arraySize; ++i){
+		StandardDeviation+=(Array[i]-mean)*(Array[i]-mean);
+	}
+	return sqrt(StandardDeviation/arraySize);
 }
 
 
@@ -49,6 +66,8 @@ void analysisEngine(int days){
 	int loginsCount=0,timeCount=0,emailsCount=0,downloadCount=0,moneyCount=0;
 	long allLogins=0, allTime=0, allEmails=0, allDownload=0, allMoney=0;
 	
+	long downloadArray[MAX]={0}, loginsArray[MAX]={0}, timeArray[MAX]={0}, emailsArray[MAX]={0}, moneyArray[MAX]={0};
+	
 	for(int i = 1; i <= days; i++){
 		
 		char eventType='A';
@@ -58,7 +77,7 @@ void analysisEngine(int days){
 		long download=0, downloadTotal=0;
 		long money=0, moneyTotal=0;
 		
-		int c=0,e=0,d=0;
+		//int c=0,e=0,d=0;
 		string event;
 		
 		while(eventType != '-'){
@@ -66,15 +85,15 @@ void analysisEngine(int days){
 			completeLog >> eventType;
 			if(eventType != '-'){
 				//cout << eventType<< " ";	// Debug Line
-				if (eventType == 'D'){
+				/*if (eventType == 'D'){
 					d++;
-				}
-				else if (eventType == 'E'){
+				 }
+				 else if (eventType == 'E'){
 					e++;
-				}
-				else if (eventType == 'C'){
+				 }
+				 else if (eventType == 'C'){
 					c++;
-				}
+				 }*/
 				
 				// Read in Event stats
 				completeLog >> event >> event;
@@ -86,6 +105,7 @@ void analysisEngine(int days){
 					download++;
 					completeLog >> tmpString >> tmpLong >> tmpString;
 					downloadTotal = downloadTotal+tmpLong;
+					downloadArray[downloadCount] = tmpLong;
 					downloadCount++;
 					//cout << tmpLong << " ";				// Debug Line
 				}
@@ -93,6 +113,7 @@ void analysisEngine(int days){
 					time++;
 					completeLog >> tmpString >> tmpLong >> tmpString;
 					timeTotal = timeTotal+tmpLong;
+					timeArray[timeCount] = tmpLong;
 					timeCount++;
 					//cout << tmpLong << " ";				// Debug Line
 					
@@ -101,6 +122,7 @@ void analysisEngine(int days){
 					money++;
 					completeLog >> tmpString >> tmpLong >> tmpString;
 					moneyTotal = moneyTotal+tmpLong;
+					moneyArray[moneyCount] = tmpLong;
 					moneyCount++;
 					//cout << tmpLong << " ";		// Debug Line
 				}
@@ -108,6 +130,7 @@ void analysisEngine(int days){
 					emails++;
 					completeLog >> tmpString >> tmpLong;
 					emailsTotal = emailsTotal+tmpLong;
+					emailsArray[emailsCount] = tmpLong;
 					emailsCount++;
 					//cout << tmpLong << " ";		// Debug Line
 				}
@@ -115,6 +138,7 @@ void analysisEngine(int days){
 					logins++;
 					completeLog >> tmpLong;
 					loginsTotal = loginsTotal+tmpLong;
+					loginsArray[loginsCount] = tmpLong;
 					loginsCount++;
 					//cout << tmpLong << " ";				// Debug Line
 				}
@@ -143,12 +167,21 @@ void analysisEngine(int days){
 	}
 	
 	cout << "**** Overall Statistics *****" << endl;
-	cout << "Average Download volume: " << calcMean(downloadCount,allDownload) << " bits" << endl;
+	cout << "Average Download volume: " << setprecision(50) << calcMean(downloadCount,allDownload) << " bits" << endl;
 	cout << "Average Time Online: " << calcMean(timeCount,allTime) << " Minutes" << endl;
 	cout << "Average Money made: " << calcMean(moneyCount,allMoney) << " Cents" << endl;
 	cout << "Average Emails Sent: " << calcMean(emailsCount,allEmails) << endl;
 	cout << "Average Logins: " << calcMean(loginsCount,allLogins) << endl;
 	cout << endl;
+	
+	
+	cout << "Standard Deviation Download volume: " << calcDev(downloadArray,downloadCount,calcMean(downloadCount,allDownload)) << " bits" << endl;
+	cout << "Standard Deviation Time Online: " << " Minutes" << endl;
+	cout << "Standard Deviation Money made: " << " Cents" << endl;
+	cout << "Standard Deviation Emails Sent: " << endl;
+	cout << "Standard Deviation Logins: " << endl;
+	cout << endl;
+	
 	
 	completeLog.close();
 	
