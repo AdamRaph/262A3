@@ -10,9 +10,9 @@
 /**
  * init analysis engine
  */
-void AnalysisEngine::init(string logFilePath,bool isSingleLog) {
-    this->logFilePath = logFilePath;
-    this->isSingleLog = isSingleLog;
+void AnalysisEngine::init(string logFilePathN,bool isSingleLogN) {
+    this->logFilePath = logFilePathN;
+    this->isSingleLog = isSingleLogN;
 }
 
 /**
@@ -37,6 +37,7 @@ vector<vector<EventTotal> > AnalysisEngine::analyse(vector<vector<EventData> > d
 vector<vector<EventTotal> > AnalysisEngine::calTotal(vector<vector<EventData> > dailyLogs,vector<Event> events){
     vector<vector<EventTotal> > eventsTotals;
     for (int i = 0; i < dailyLogs.size(); ++i) {
+        cout<<"Analysing day "<<i+1<<"..."<<endl;
         vector<EventTotal> eventsTotal;
         //init events total array
         for (int j = 0; j < events.size(); ++j) {
@@ -102,7 +103,8 @@ void AnalysisEngine::writeCurrentStats(vector<Stat> currentStat){
     cout<<"Generating current statistics..."<<endl;
     string errorMsg;
     ofstream statsWriter;
-    statsWriter.open(this->logFilePath+CURRENT_STAT_FILENAME);
+    string fileName = this->logFilePath+CURRENT_STAT_FILENAME;
+    statsWriter.open(fileName.c_str());
     if(!statsWriter){
         errorMsg = "Current Statistics generating error, exiting...";
         throw runtime_error(errorMsg);
@@ -128,7 +130,8 @@ void AnalysisEngine::writeEventsTotals(vector<vector<EventTotal> > eventsTotals)
     cout<<"Generating events totals..."<<endl;
     string errorMsg;
     ofstream totalsWriter;
-    totalsWriter.open(this->logFilePath+DAILY_TOTAL_FILENAME);
+    string fileName = this->logFilePath+DAILY_TOTAL_FILENAME;
+    totalsWriter.open(fileName.c_str());
     if(!totalsWriter){
         errorMsg = "Events totals generating error, exiting...";
         throw runtime_error(errorMsg);
@@ -156,7 +159,8 @@ vector<vector<EventData> > AnalysisEngine::readInDailyLogs(int days){
     vector<vector<EventData> > dailyLogs;
     //single log mode
     if(this->isSingleLog){
-        logFile.open(this->logFilePath+COMPLETE_LOG_FILENAME);
+        string fileName = this->logFilePath+COMPLETE_LOG_FILENAME;
+        logFile.open(fileName.c_str());
         if(!logFile){
             errMsg = "Error reading single log file. Exiting...";
             throw runtime_error(errMsg);
@@ -193,7 +197,8 @@ vector<vector<EventData> > AnalysisEngine::readInDailyLogs(int days){
             ss<<i;
             string dayStr = ss.str();
             vector<EventData> dailyLog;
-            logFile.open(this->logFilePath + DAYLY_LOG_PREFIX + dayStr + DAYLY_LOG_POSTFIX);
+            string fileName = this->logFilePath + DAYLY_LOG_PREFIX + dayStr + DAYLY_LOG_POSTFIX;
+            logFile.open(fileName.c_str());
             if(!logFile){
                 errMsg = "Error reading day "+dayStr+" log file. Exiting...";
                 throw runtime_error(errMsg);

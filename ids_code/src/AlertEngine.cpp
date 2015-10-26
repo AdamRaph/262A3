@@ -19,7 +19,8 @@ void AlertEngine::checkAnomaly(vector<Stat> currentStats,vector<vector<EventTota
     for (int i = 0; i < eventsTotals.size(); ++i) {
         double threshold = 0;
         for (int j = 0; j < eventsTotals[i].size(); ++j) {
-            threshold += eventsTotals[i][j].amount*events[j].weight;
+            threshold += events[j].weight;
+//            threshold += eventsTotals[i][j].amount*events[j].weight;
         }
         threshold*=2;
         thresholds.push_back(threshold);

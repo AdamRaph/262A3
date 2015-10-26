@@ -10,9 +10,9 @@
 /**
  * init activity engine with log file path and mode
  */
-void ActivityEngine::init(string logFilePath, bool isSingleLog) {
-    this->logFilePath = logFilePath;
-    this->isSingleLog = isSingleLog;
+void ActivityEngine::init(string logFilePathN, bool isSingleLogN) {
+    this->logFilePath = logFilePathN;
+    this->isSingleLog = isSingleLogN;
 }
 
 /**
@@ -117,14 +117,14 @@ void ActivityEngine::writeDailyLogEntries(int currentDay, string userName, vecto
     if (this->isSingleLog) {
         //write into single file
         fileName += COMPLETE_LOG_FILENAME;
-        logWriter.open(fileName,ios::app);
+        logWriter.open(fileName.c_str(),ios::app);
         errMsg = "Error creating total logs. Exiting...";
         str += "#DAY " + dayStr + "\n";
 
     } else {
         //write into daily file
         fileName += DAYLY_LOG_PREFIX + dayStr + DAYLY_LOG_POSTFIX;
-        logWriter.open(fileName);
+        logWriter.open(fileName.c_str());
         errMsg = "Error creating day " + dayStr + " logs. Exiting...";
     }
     //check output file

@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 void run(string eventsFilePath,string userName,string statsFilePath,string days){
     try {
         //true-single log | false-multi log
-        bool isSingleLog = false;
+        bool isSingleLog = true;
 
         /*********** Initial Input ***********/
         cout << "================== Running Data Initializer ==================" << endl;
@@ -80,7 +80,7 @@ void run(string eventsFilePath,string userName,string statsFilePath,string days)
         cout << endl << "================== Running Alert Engine ==================" << endl;
         AlertEngine alertEngine;
         string fileName = string(IDS_FILE_PATH) + string(CURRENT_STAT_FILENAME);
-        cout << "------------ statistics ------------" << endl;
+        cout << "------------ current statistics ------------" << endl;
         vector<Stat> currentStats = dataHandler.readInStats(fileName, true);
         cout << "------------ anomaly report ------------" << endl;
         alertEngine.checkAnomaly(currentStats, eventsTotals, events);

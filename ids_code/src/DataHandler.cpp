@@ -13,20 +13,21 @@ using namespace std;
 /**
  * init data handler from the command arguments
  */
-void DataHandler::init(string eventsFilePath,string userName,string statsFilePath,string days) {
-    this->eventsFilePath = eventsFilePath;
-    this->userName = userName;
-    this->statsFilePath = statsFilePath;
-    this->days = atoi(days.c_str());
+void DataHandler::init(string eventsFilePathN,string userNameN,string statsFilePathN,string daysN) {
+    this->eventsFilePath = eventsFilePathN;
+    this->userName = userNameN;
+    this->statsFilePath = statsFilePathN;
+    this->days = atoi(daysN.c_str());
 }
 
 /**
  * read events from file
  */
-vector<Event> DataHandler::readInEvents(string eventsFilePath) {
+vector<Event> DataHandler::readInEvents(string eventsFilePathN) {
     string errMsg;
-    if(eventsFilePath=="") eventsFilePath = this->eventsFilePath;
-    ifstream inFile(eventsFilePath);
+    if(eventsFilePathN=="") eventsFilePathN = this->eventsFilePath;
+    ifstream inFile;
+    inFile.open(eventsFilePathN.c_str());
     //check if file exists
     if (!inFile.good()) {
         errMsg = "Error reading Events file. Exiting...";
@@ -62,10 +63,11 @@ vector<Event> DataHandler::readInEvents(string eventsFilePath) {
 /**
  * read statistics from file
  */
-vector<Stat> DataHandler::readInStats(string statsFilePath,bool isPrint) {
+vector<Stat> DataHandler::readInStats(string statsFilePathN,bool isPrint) {
     string errMsg;
-    if(statsFilePath=="") statsFilePath = this->statsFilePath;
-    ifstream inFile(statsFilePath);
+    if(statsFilePathN=="") statsFilePathN = this->statsFilePath;
+    ifstream inFile;
+    inFile.open(statsFilePathN.c_str());
     //check if file exists
     if (!inFile.good()) {
         errMsg = "Error reading Stats file. Exiting...";
@@ -91,7 +93,7 @@ vector<Stat> DataHandler::readInStats(string statsFilePath,bool isPrint) {
         stats.push_back(stat);
     }
     inFile.close();
-    if(!isPrint) cout << "Stats read in success." << endl;
+    if(!isPrint) cout << "Stats.txt read in success." << endl;
 
     return stats;
 }
