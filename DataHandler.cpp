@@ -104,28 +104,33 @@ vector<Stat> DataHandler::readInStats(string statsFilePathN,bool isPrint) {
  */
 void DataHandler::checkConsistency(vector<Event> events,vector<Stat> stats){
     string errorMsg;
-    //1.mean need to be within the range
+    //1.the number of events and stats must be equal
+    if(events.size()!=stats.size()){
+        errorMsg = "Size of events and stats is not equal, there is inconsistency. exiting...";
+        throw runtime_error(errorMsg);
+    }
+    //2.mean need to be greater than or equal to min value
     for (int i = 0; i < events.size(); ++i) {
-        if(events[i].max < stats[i].mean && events[i].min > stats[i].mean){
-            errorMsg = "Mean value of " + events[i].name + " is not within max and min, there is inconsistency. exiting...";
+        if( events[i].min > stats[i].mean){
+            errorMsg = "Mean value of " + events[i].name + " is not greater than min, there is inconsistency. exiting...";
             throw runtime_error(errorMsg);
         }
     }
-    //2. if min is 0, mean is 0, then stdDev must be 0
+    //3. if min is 0, mean is 0, then stdDev must be 0
     for (int i = 0; i < events.size(); ++i) {
         if(events[i].min ==0 && stats[i].mean == 0 && stats[i].stdDev != 0){
             errorMsg = "Standard deviation is not 0 when min and mean is 0, there is inconsistency. exiting...";
             throw runtime_error(errorMsg);
         }
     }
-    //3.standard event must be greater than zero
+    //4.standard event must be greater than or equal to zero
     for (int i = 0; i < events.size(); ++i) {
         if(stats[i].stdDev < 0){
             errorMsg = "Standard deviation is less than 0, there is inconsistency. exiting...";
             throw runtime_error(errorMsg);
         }
     }
-    //4.min need to be less and equal to max
+    //5.min need to be less and equal to max
     for (int i = 0; i < events.size(); ++i) {
         if(events[i].min>events[i].max){
             errorMsg = "Max is less than min, there is inconsistency. exiting...";
