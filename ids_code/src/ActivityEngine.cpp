@@ -173,6 +173,5 @@ void ActivityEngine::cleanOldLogs(){
     ofstream oldLogs;
     string fileName = this->logFilePath + COMPLETE_LOG_FILENAME;
     oldLogs.open(fileName.c_str());
-    oldLogs<<"";
     oldLogs.close();
 }
