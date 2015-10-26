@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <stdexcept>
-#include "../header/DataHandler.h"
+#include "DataHandler.h"
 
 using namespace std;
 /*****************************************************************

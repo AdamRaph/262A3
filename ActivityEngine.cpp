@@ -5,8 +5,8 @@
 #include <iomanip>
 #include <iostream>
 #include <stdexcept>
-#include "../header/ActivityEngine.h"
-#include "../header/DataHandler.h"
+#include "ActivityEngine.h"
+#include "DataHandler.h"
 
 /**
  * init activity engine with log file path and mode

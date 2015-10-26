@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include <iostream>
 #include <iomanip>
-#include "../header/AlertEngine.h"
-#include "../header/DataType.h"
+#include "AlertEngine.h"
+#include "DataType.h"
 
 /**
  * check the anomaly in daily stat log
@@ -20,7 +20,6 @@ void AlertEngine::checkAnomaly(vector<Stat> currentStats,vector<vector<EventTota
         double threshold = 0;
         for (int j = 0; j < eventsTotals[i].size(); ++j) {
             threshold += events[j].weight;
-//            threshold += eventsTotals[i][j].amount*events[j].weight;
         }
         threshold*=2;
         thresholds.push_back(threshold);
@@ -38,7 +37,7 @@ void AlertEngine::checkAnomaly(vector<Stat> currentStats,vector<vector<EventTota
     cout<<setw(5)<<"Day"<<setw(10)<<"Counter"<<setw(10)<<"Threshold"<<setw(10)<<"Status"<<endl;
     for (int i = 0; i < eventsTotals.size(); ++i) {
         string status = counters[i]>thresholds[i]?"Abnormal":"Okay";
-        cout<<setw(5)<<i+1<<setw(10)<<counters[i]<<setw(10)<<thresholds[i]<<setw(10)<<status<<endl;
+        cout<<setw(5)<<i+1<<setw(10)<<fixed<<setprecision(2)<<counters[i]<<setw(10)<<thresholds[i]<<setw(10)<<status<<endl;
     }
 }
 

@@ -5,8 +5,8 @@
 #include <math.h>
 #include <iomanip>
 #include <stdexcept>
-#include "../header/AnalysisEngine.h"
-#include "../header/DataHandler.h"
+#include "AnalysisEngine.h"
+#include "DataHandler.h"
 
 /**
  * init analysis engine

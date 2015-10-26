@@ -1,7 +1,7 @@
 #ifndef ANALYSISENGINE_H
 #define ANALYSISENGINE_H
 
-#include "../header/DataType.h"
+#include "DataType.h"
 
 using namespace std;
 

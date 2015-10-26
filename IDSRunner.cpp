@@ -1,9 +1,9 @@
 #include <iostream>
 #include <stdexcept>
-#include "../header/DataHandler.h"
-#include "../header/ActivityEngine.h"
-#include "../header/AnalysisEngine.h"
-#include "../header/AlertEngine.h"
+#include "DataHandler.h"
+#include "ActivityEngine.h"
+#include "AnalysisEngine.h"
+#include "AlertEngine.h"
 
 #define IDS_FILE_PATH "./"
 
