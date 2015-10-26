@@ -103,10 +103,35 @@ vector<Stat> DataHandler::readInStats(string statsFilePathN,bool isPrint) {
  * check inconsistency between stats file and events file
  */
 void DataHandler::checkConsistency(vector<Event> events,vector<Stat> stats){
-    //mean 需要在 区间内
-    //如果最小值为0，mean==0，stdDev 也一定为0
-    //stddev>=0
-
+    string errorMsg;
+    //1.mean need to be within the range
+    for (int i = 0; i < events.size(); ++i) {
+        if(events[i].max < stats[i].mean && events[i].min > stats[i].mean){
+            errorMsg = "Mean value of " + events[i].name + " is not within max and min, there is inconsistency. exiting...";
+            throw runtime_error(errorMsg);
+        }
+    }
+    //2. if min is 0, mean is 0, then stdDev must be 0
+    for (int i = 0; i < events.size(); ++i) {
+        if(events[i].min ==0 && stats[i].mean == 0 && stats[i].stdDev != 0){
+            errorMsg = "Standard deviation is not 0 when min and mean is 0, there is inconsistency. exiting...";
+            throw runtime_error(errorMsg);
+        }
+    }
+    //3.standard event must be greater than zero
+    for (int i = 0; i < events.size(); ++i) {
+        if(stats[i].stdDev < 0){
+            errorMsg = "Standard deviation is less than 0, there is inconsistency. exiting...";
+            throw runtime_error(errorMsg);
+        }
+    }
+    //4.min need to be less and equal to max
+    for (int i = 0; i < events.size(); ++i) {
+        if(events[i].min>events[i].max){
+            errorMsg = "Max is less than min, there is inconsistency. exiting...";
+            throw runtime_error(errorMsg);
+        }
+    }
 }
 
 /**
