@@ -1,4 +1,5 @@
 #include <iostream>
+#include <stdexcept>
 #include "../header/DataHandler.h"
 #include "../header/ActivityEngine.h"
 #include "../header/AnalysisEngine.h"
@@ -61,7 +62,8 @@ void run(string eventsFilePath,string userName,string statsFilePath,string days)
         //read Events.txt and Stat.txt
         vector<Event> events = dataHandler.readInEvents();
         vector<Stat> stats = dataHandler.readInStats();
-        //TODO,check inconsistency
+        //check inconsistency
+        dataHandler.checkConsistency(events,stats);
 
         /*********** Activity Engine ***********/
         cout << endl << "================== Running Activity Engine ==================" << endl;

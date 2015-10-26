@@ -3,6 +3,7 @@
 #include <vector>
 #include <fstream>
 #include <sstream>
+#include <stdexcept>
 #include "../header/DataHandler.h"
 
 using namespace std;
@@ -96,6 +97,16 @@ vector<Stat> DataHandler::readInStats(string statsFilePathN,bool isPrint) {
     if(!isPrint) cout << "Stats.txt read in success." << endl;
 
     return stats;
+}
+
+/**
+ * check inconsistency between stats file and events file
+ */
+void DataHandler::checkConsistency(vector<Event> events,vector<Stat> stats){
+    //mean 需要在 区间内
+    //如果最小值为0，mean==0，stdDev 也一定为0
+    //stddev>=0
+
 }
 
 /**

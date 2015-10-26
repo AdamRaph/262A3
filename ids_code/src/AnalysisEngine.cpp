@@ -4,6 +4,7 @@
 #include <iostream>
 #include <math.h>
 #include <iomanip>
+#include <stdexcept>
 #include "../header/AnalysisEngine.h"
 #include "../header/DataHandler.h"
 

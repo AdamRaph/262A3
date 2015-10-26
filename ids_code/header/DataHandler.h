@@ -20,6 +20,7 @@ public:
     void init(string,string,string,string);
     vector<Event> readInEvents(string filePath = "");
     vector<Stat> readInStats(string filePath = "",bool isPrint = false);
+    void checkConsistency(vector<Event> events,vector<Stat> stats);
 
     //getter and setter
     int getDays();

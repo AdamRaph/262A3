@@ -4,6 +4,7 @@
 #include <math.h>
 #include <iomanip>
 #include <iostream>
+#include <stdexcept>
 #include "../header/ActivityEngine.h"
 #include "../header/DataHandler.h"
 
@@ -21,7 +22,9 @@ void ActivityEngine::init(string logFilePathN, bool isSingleLogN) {
  */
 void ActivityEngine::generateLogs(vector<Event> events, vector<Stat> stats, int days, string userName) {
     srand(time(NULL));
-
+    //clear the old log
+    this->cleanOldLogs();
+    //begin generating
     for (int currentDay = 1; currentDay <= days; ++currentDay) {
         cout << "Genterating Day " << currentDay << " events..." << endl;
         vector<double> eventTotals;
@@ -161,4 +164,15 @@ void ActivityEngine::writeDailyLogEntries(int currentDay, string userName, vecto
  */
 bool ActivityEngine::compare(EventData eData_1, EventData eData_2) {
     return eData_1.time < eData_2.time;
+}
+
+/**
+ * clean old logs
+ */
+void ActivityEngine::cleanOldLogs(){
+    ofstream oldLogs;
+    string fileName = this->logFilePath + COMPLETE_LOG_FILENAME;
+    oldLogs.open(fileName.c_str());
+    oldLogs<<"";
+    oldLogs.close();
 }
